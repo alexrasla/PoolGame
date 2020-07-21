@@ -1,5 +1,6 @@
 const BALL_ORIGIN = new Vector2(25, 25);
 const BALL_DIAMETER = 38;
+const BALL_RADIUS = BALL_DIAMETER/2;
 
 function Ball(position, color){
     this.position = position;
@@ -10,7 +11,8 @@ function Ball(position, color){
 
 Ball.prototype.update = function(delta){
     this.position.addTo(this.velocity.mult(delta));
-    this.velocity = this.velocity.mult(0.98); //represents friction... updates velocity and when update called here again, addTo is different
+
+    this.velocity = this.velocity.mult(0.984); //represents friction... updates velocity and when update called here again, addTo is different
     if(this.velocity.len() < 5){
         this.velocity = new Vector2();
         this.moving = false;
@@ -27,8 +29,17 @@ Ball.prototype.shoot = function(power, rotation){ //this is called bc passing fu
 }
 
 //collision physics
-Ball.prototype.collideWith = function(ball){
-    
+Ball.prototype.collideWith = function(object){
+    if(object instanceof Ball){
+        this.collideWithBall(object);
+    } else{
+        this.collideWithTable(object);
+    }
+   
+}
+
+Ball.prototype.collideWithBall = function(ball){
+     
     //normal vector
     const n = this.position.subtract(ball.position);
 
@@ -38,6 +49,14 @@ Ball.prototype.collideWith = function(ball){
     if(dist > BALL_DIAMETER){
         return;
     }
+
+    //minimum translation distance
+    const mtd = n.mult((BALL_DIAMETER - dist) / dist);
+
+    //push-pull balls
+    this.position = this.position.add(mtd.mult(1/2));
+    ball.position = ball.position.subtract(mtd.mult(1/2));
+    //makes balls not overlap
 
     const unit = n.mult(1/n.len());
     const unit_tangent = new Vector2(-unit.y, unit.x);
@@ -63,4 +82,36 @@ Ball.prototype.collideWith = function(ball){
 
     this.moving = true;
     ball.moving = true;
+}
+
+Ball.prototype.collideWithTable = function(table){
+    if(!this.moving){
+        return;
+    }
+
+    let collided = false;
+
+    if(this.position.y <= table.TopY + BALL_RADIUS){
+        this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
+        collided = true;
+    }
+
+    if(this.position.x >= table.RightX - BALL_RADIUS){
+        this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
+        collided = true;
+    }
+
+    if(this.position.y >= table.BottomY - BALL_RADIUS){
+        this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
+        collided = true;
+    }
+
+    if(this.position.x <= table.LeftX + BALL_RADIUS){
+        this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
+        collided = true;
+    }
+
+    if(collided){
+        this.velocity = this.velocity.mult(0.98);
+    }
 }
