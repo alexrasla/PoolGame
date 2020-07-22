@@ -7,6 +7,10 @@ Canvas2D.prototype.clear = function(){
     this._canvasContext.clearRect(0, 0, this._canvas.width, this._canvas.height);
 }
 
+Canvas2D.prototype.erase = function(image){
+    document.removeChild(image);
+}
+
 Canvas2D.prototype.drawImage = function(image, position, origin, rotation = 0){
 
     if(!position){

@@ -7,6 +7,7 @@ function Ball(position, color){
     this.velocity = new Vector2();
     this.moving = false;
     this.sprite = getBallSpriteByColor(color);
+    this.color = color;
 }
 
 Ball.prototype.update = function(delta){
@@ -91,27 +92,77 @@ Ball.prototype.collideWithTable = function(table){
 
     let collided = false;
 
-    if(this.position.y <= table.TopY + BALL_RADIUS){
+    
+    if(this.position.y <= table.TopY + BALL_DIAMETER && this.position.x <= table.LeftX + BALL_DIAMETER){ //top left
+        this.pot();
+    } else if(this.position.y <= table.TopY + BALL_RADIUS) {
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
         collided = true;
     }
-
-    if(this.position.x >= table.RightX - BALL_RADIUS){
+    
+     
+    if(this.position.y <= table.TopY + BALL_DIAMETER && this.position.x >= table.RightX - BALL_DIAMETER){ //top right
+        this.pot();
+    }else if(this.position.x >= table.RightX - BALL_RADIUS){
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
         collided = true;
     }
+    
 
-    if(this.position.y >= table.BottomY - BALL_RADIUS){
+    if(this.position.x >= table.RightX - BALL_DIAMETER && this.position.y >= table.BottomY - BALL_DIAMETER){ //bottom right
+        this.pot();
+    } else if(this.position.y >= table.BottomY - BALL_RADIUS){
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
         collided = true;
     }
+    
 
-    if(this.position.x <= table.LeftX + BALL_RADIUS){
+    if(this.position.y >= table.BottomY - BALL_DIAMETER && this.position.x <= table.LeftX + BALL_DIAMETER){ //bottom left
+        this.pot()
+    } else if(this.position.x <= table.LeftX + BALL_RADIUS){
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
         collided = true;
     }
+        
 
+    // if(this.position.y >= table.BottomY - BALL_RADIUS){
+    //     if(this.position.x == (table.RightX + table.LeftX) / 2 - BALL_RADIUS){ //bottom middle
+    //         this.pot();
+    //     } else{
+    //         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
+    //         collided = true;
+    //     }
+       
+    // }
+
+    // if(this.position.y <= table.TopY + BALL_RADIUS){
+    //     if(this.position.x == (table.RightX + table.LeftX) / 2 + BALL_RADIUS){ //up middle
+    //         this.pot();
+    //     } else{
+    //         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
+    //         collided = true;
+    //     }
+      
+    // }
+    
     if(collided){
         this.velocity = this.velocity.mult(0.98);
     }
+}
+
+Ball.prototype.pot = function(table){
+    
+    if(this.color == COLOR.WHITE){
+        console.log("scratch");
+        this.velocity = new Vector2();
+        this.position = new Vector2(413, 413);
+    } else{
+        console.log("pot");
+        this.velocity = new Vector2();
+        this.position = new Vector2(1600, 850);
+    }
+    
+
+
+
 }

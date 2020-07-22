@@ -31,6 +31,7 @@ function GameWorld(){
         BottomY: 768,
         LeftX: 57
     }
+
 }
 
 GameWorld.prototype.handleCollisions = function(){
@@ -41,7 +42,9 @@ GameWorld.prototype.handleCollisions = function(){
             const secondBall = this.balls[j];
 
             firstBall.collideWith(secondBall);
+
         }
+    
     }
 }
 
@@ -82,4 +85,12 @@ GameWorld.prototype.ballsMoving = function(){
     }
 
     return ballsMoving;
+}
+
+GameWorld.prototype.scored = function(){
+
+    for(let i = 0; i < this.balls.length; i++){
+        this.balls[i].pot();
+    }
+
 }
